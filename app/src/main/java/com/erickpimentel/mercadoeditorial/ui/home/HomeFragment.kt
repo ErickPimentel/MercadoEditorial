@@ -40,39 +40,36 @@ class HomeFragment : Fragment(), Listener {
         ApiClient().getClient().create(ApiService::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        binding.apply {
+        setupRecyclerView()
 
-            recyclerView.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = bookAdapter
-            }
+        binding.progressBar.visibility = View.VISIBLE
 
-            progressBar.visibility = View.VISIBLE
-
-            getAvailableBooks()
-        }
+        getAvailableBooks()
 
         return binding.root
     }
 
-    private fun FragmentHomeBinding.getAvailableBooks() {
+    private fun setupRecyclerView() {
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = bookAdapter
+        }
+    }
+
+    private fun getAvailableBooks() {
         val callBookApi = api.getBooks(1, null, null)
         callBookApi.enqueue(object : Callback<BookListResponse> {
             override fun onResponse(
                 call: Call<BookListResponse>,
                 response: Response<BookListResponse>
             ) {
-                progressBar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
                 when (response.code()) {
                     in 200..299 -> {
                         response.body().let { body ->
@@ -80,7 +77,7 @@ class HomeFragment : Fragment(), Listener {
                                 if (!data.isNullOrEmpty()) {
                                     bookAdapter.differ.submitList(data)
                                 } else {
-                                    noResults.visibility = View.VISIBLE
+                                    binding.noResults.visibility = View.VISIBLE
                                 }
                             }
                         }
@@ -92,7 +89,7 @@ class HomeFragment : Fragment(), Listener {
             }
 
             override fun onFailure(call: Call<BookListResponse>, t: Throwable) {
-                progressBar.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
                 Log.e("HomeFragment", "onFailure: ${t.message}")
             }
 

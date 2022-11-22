@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
@@ -42,31 +41,32 @@ class SearchFragment : Fragment(), Listener {
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
 
-        binding.apply {
+        setupRecyclerView()
 
-            recyclerView.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = bookAdapter
-            }
+        setOnQueryTextListener()
 
-            setOnQueryTextListener()
-
-            bookViewModel.currentQuery.observe(requireActivity()) {
-                if (!it.isNullOrEmpty()) getAvailableBooks(it)
-            }
-        }
+        getBooksByCurrentQuery()
 
         return binding.root
+    }
+
+    private fun getBooksByCurrentQuery() {
+        bookViewModel.currentQuery.observe(requireActivity()) {
+            if (!it.isNullOrEmpty()) getBooks(it)
+        }
+    }
+
+    private fun setupRecyclerView() {
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = bookAdapter
+        }
     }
 
     private fun setOnQueryTextListener() {
@@ -94,7 +94,7 @@ class SearchFragment : Fragment(), Listener {
         return toCheck.all { char -> char.isDigit() }
     }
 
-    private fun getAvailableBooks(query: String) {
+    private fun getBooks(query: String) {
 
         var title: String? = null
         var isbn: String? = null
