@@ -1,4 +1,4 @@
-package com.erickpimentel.mercadoeditorial.ui.list
+package com.erickpimentel.mercadoeditorial.ui.search
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
