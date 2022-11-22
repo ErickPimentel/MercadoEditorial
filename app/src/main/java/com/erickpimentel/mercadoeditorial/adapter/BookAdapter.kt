@@ -33,7 +33,7 @@ class BookAdapter: RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
             binding.apply {
                 bookTitle.text = item.titulo
                 val bookPosterURL = item.imagens.imagem_primeira_capa.pequena
-                imageBook.load(bookPosterURL){
+                bookImageView.load(bookPosterURL){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)
                     scale(Scale.FILL)
