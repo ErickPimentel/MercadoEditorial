@@ -1,10 +1,12 @@
 package com.erickpimentel.mercadoeditorial.ui.search
 
 import android.os.Bundle
+import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 
 /**
@@ -26,6 +28,10 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
+
+//        binding.searchView.setQueryHint(Html.fromHtml("<font color = #ffffff>" + getResources().getString(
+//            R.string.query_hint) + "</font>"));
+
         return binding.root
     }
 }
