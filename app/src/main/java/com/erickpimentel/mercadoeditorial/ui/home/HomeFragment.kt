@@ -44,49 +44,54 @@ class HomeFragment : Fragment() {
         binding.apply {
             progressBar.visibility = View.VISIBLE
 
-            val callBookApi = api.getBooksByStatusCode(1)
-            callBookApi.enqueue(object : Callback<BookListResponse> {
-                override fun onResponse(
-                    call: Call<BookListResponse>,
-                    response: Response<BookListResponse>
-                ) {
-                    progressBar.visibility = View.GONE
-
-                    when(response.code()){
-                        in 200..299 -> {
-                            response.body().let { body ->
-                                body?.books.let { data ->
-                                    if (data!!.isNotEmpty()){
-                                        bookAdapter.differ.submitList(data)
-                                        recyclerView.apply {
-                                            layoutManager = LinearLayoutManager(context)
-                                            adapter=bookAdapter
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        in 300..399 -> {
-                            Log.e("HomeFragment", "Redirection messages: ${response.code()}")
-                        }
-                        in 400..499 -> {
-                            Log.e("HomeFragment", "Client error messages: ${response.code()}")
-                        }
-                        in 500..599 -> {
-                            Log.e("HomeFragment", "Server error messages: ${response.code()}")
-                        }
-                    }
-                }
-
-                override fun onFailure(call: Call<BookListResponse>, t: Throwable) {
-                    progressBar.visibility = View.GONE
-                    Log.e("HomeFragment", "onFailure: ${t.message}")
-                }
-
-            })
+            getAvailableBooks()
         }
 
         return binding.root
+    }
+
+    private fun FragmentHomeBinding.getAvailableBooks() {
+        val callBookApi = api.getBooks(1, null, null)
+        callBookApi.enqueue(object : Callback<BookListResponse> {
+            override fun onResponse(
+                call: Call<BookListResponse>,
+                response: Response<BookListResponse>
+            ) {
+                progressBar.visibility = View.GONE
+                when (response.code()) {
+                    in 200..299 -> {
+                        response.body().let { body ->
+                            body?.books.let { data ->
+                                if (!data.isNullOrEmpty()) {
+                                    bookAdapter.differ.submitList(data)
+                                    recyclerView.apply {
+                                        layoutManager = LinearLayoutManager(context)
+                                        adapter = bookAdapter
+                                    }
+                                } else {
+                                    noResults.visibility = View.VISIBLE
+                                }
+                            }
+                        }
+                    }
+                    in 300..399 -> {
+                        Log.e("HomeFragment", "Redirection messages: ${response.code()}")
+                    }
+                    in 400..499 -> {
+                        Log.e("HomeFragment", "Client error messages: ${response.code()}")
+                    }
+                    in 500..599 -> {
+                        Log.e("HomeFragment", "Server error messages: ${response.code()}")
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<BookListResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
+                Log.e("HomeFragment", "onFailure: ${t.message}")
+            }
+
+        })
     }
 
 }

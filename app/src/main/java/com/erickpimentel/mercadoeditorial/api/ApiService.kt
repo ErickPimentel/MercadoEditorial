@@ -8,9 +8,10 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("book")
-    fun getBooksByStatusCode(@Query("codigo_status") statusCode : Int) : Call<BookListResponse>
-
-    @GET("book")
-    fun getBookByTitle(@Query("titulo") title : String) : Call<BookListResponse>
+    fun getBooks(
+        @Query("codigo_status") statusCode : Int?,
+        @Query("titulo") title : String?,
+        @Query("isbn") isbn : String?
+    ) : Call<BookListResponse>
 
 }
