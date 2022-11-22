@@ -9,10 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
+import com.erickpimentel.mercadoeditorial.adapter.listener.Listener
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
 
-class BookAdapter: RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookAdapter(
+    private val listener: Listener
+): RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     private lateinit var context: Context
 
@@ -29,14 +32,17 @@ class BookAdapter: RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
     }
 
     inner class BookViewHolder(private val binding: BookViewBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Book){
+        fun bind(book: Book){
             binding.apply {
-                bookTitle.text = item.titulo
-                val bookPosterURL = item.imagens.imagem_primeira_capa.pequena
-                bookImageView.load(bookPosterURL){
+                bookTitle.text = book.titulo
+                bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)
                     scale(Scale.FILL)
+                }
+
+                constraintLayout.setOnClickListener {
+                    listener.onItemClickListener(book)
                 }
             }
         }

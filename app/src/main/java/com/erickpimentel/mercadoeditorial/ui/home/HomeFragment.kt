@@ -6,12 +6,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
+import com.erickpimentel.mercadoeditorial.adapter.listener.Listener
 import com.erickpimentel.mercadoeditorial.api.ApiClient
 import com.erickpimentel.mercadoeditorial.api.ApiService
 import com.erickpimentel.mercadoeditorial.databinding.FragmentHomeBinding
+import com.erickpimentel.mercadoeditorial.response.Book
 import com.erickpimentel.mercadoeditorial.response.BookListResponse
+import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,12 +28,14 @@ import retrofit2.Response
  * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), Listener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val bookAdapter by lazy { BookAdapter() }
+    private val bookViewModel: BookViewModel by activityViewModels()
+
+    private val bookAdapter by lazy { BookAdapter(this) }
     private val api: ApiService by lazy {
         ApiClient().getClient().create(ApiService::class.java)
     }
@@ -74,14 +83,8 @@ class HomeFragment : Fragment() {
                             }
                         }
                     }
-                    in 300..399 -> {
-                        Log.e("HomeFragment", "Redirection messages: ${response.code()}")
-                    }
-                    in 400..499 -> {
-                        Log.e("HomeFragment", "Client error messages: ${response.code()}")
-                    }
-                    in 500..599 -> {
-                        Log.e("HomeFragment", "Server error messages: ${response.code()}")
+                    in 300..599 -> {
+                        Log.e("HomeFragment", "Could not get book(s): ${response.code()}")
                     }
                 }
             }
@@ -92,6 +95,11 @@ class HomeFragment : Fragment() {
             }
 
         })
+    }
+
+    override fun onItemClickListener(book: Book) {
+        bookViewModel.addCurrentBook(book)
+        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment())
     }
 
 }
