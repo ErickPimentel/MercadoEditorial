@@ -51,6 +51,12 @@ class HomeFragment : Fragment(), Listener {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         binding.apply {
+
+            recyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = bookAdapter
+            }
+
             progressBar.visibility = View.VISIBLE
 
             getAvailableBooks()
@@ -73,10 +79,6 @@ class HomeFragment : Fragment(), Listener {
                             body?.books.let { data ->
                                 if (!data.isNullOrEmpty()) {
                                     bookAdapter.differ.submitList(data)
-                                    recyclerView.apply {
-                                        layoutManager = LinearLayoutManager(context)
-                                        adapter = bookAdapter
-                                    }
                                 } else {
                                     noResults.visibility = View.VISIBLE
                                 }
