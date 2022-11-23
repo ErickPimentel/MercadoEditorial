@@ -12,11 +12,10 @@ import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
+import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.BookListResponse
-import com.erickpimentel.mercadoeditorial.ui.home.HomeFragmentDirections
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
@@ -34,7 +33,7 @@ class SearchFragment : Fragment(){
     lateinit var apiRepository: ApiRepository
 
     @Inject
-    lateinit var bookAdapter: BookAdapter
+    lateinit var bookRecyclerViewAdapter: BookRecyclerViewAdapter
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
@@ -50,7 +49,7 @@ class SearchFragment : Fragment(){
 
         getBooksByCurrentQuery()
 
-        bookAdapter.setOnItemClickListener {
+        bookRecyclerViewAdapter.setOnItemClickListener {
             bookViewModel.currentBook.value = it
             findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
         }
@@ -67,7 +66,7 @@ class SearchFragment : Fragment(){
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = bookAdapter
+            adapter = bookRecyclerViewAdapter
         }
     }
 
@@ -92,7 +91,7 @@ class SearchFragment : Fragment(){
         imn.hideSoftInputFromWindow(windowToken, 0)
     }
 
-    fun isNumeric(toCheck: String): Boolean {
+    private fun isNumeric(toCheck: String): Boolean {
         return toCheck.all { char -> char.isDigit() }
     }
 
@@ -104,7 +103,7 @@ class SearchFragment : Fragment(){
         if (isNumeric(query)) isbn = query
         else title = query
 
-        val callBookApi = apiRepository.getBooks(null,null, title, isbn)
+        val callBookApi = apiRepository.getBooksCall(null,null, title, isbn)
         callBookApi.enqueue(object : Callback<BookListResponse> {
             override fun onResponse(
                 call: Call<BookListResponse>,
@@ -115,7 +114,7 @@ class SearchFragment : Fragment(){
                         response.body().let { body ->
                             body?.books.let { data ->
                                 if (!data.isNullOrEmpty()) {
-                                    bookAdapter.differ.submitList(data)
+                                    bookRecyclerViewAdapter.differ.submitList(data)
                                 }
                             }
                         }

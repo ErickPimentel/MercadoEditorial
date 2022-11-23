@@ -12,7 +12,7 @@ import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
 import javax.inject.Inject
 
-class BookAdapter @Inject constructor(): RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
+class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRecyclerViewAdapter.BookViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
         return BookViewHolder(BookViewBinding.inflate(LayoutInflater.from(parent.context), parent, false))

@@ -2,15 +2,24 @@ package com.erickpimentel.mercadoeditorial.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import com.erickpimentel.mercadoeditorial.paging.BooksPagingSource
+import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.Book
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class BookViewModel: ViewModel() {
+@HiltViewModel
+class BookViewModel @Inject constructor(private val repository: ApiRepository): ViewModel() {
 
     private val _currentBook = MutableLiveData<Book>()
-    val currentBook: MutableLiveData<Book> = _currentBook
+    val currentBook: MutableLiveData<Book> get() = _currentBook
 
     private val _currentQuery = MutableLiveData<String?>()
-    val currentQuery: MutableLiveData<String?> = _currentQuery
+    val currentQuery: MutableLiveData<String?> get() = _currentQuery
 
     private fun insertCurrentBook(book: Book){
         _currentBook.value = book
@@ -27,5 +36,9 @@ class BookViewModel: ViewModel() {
     fun updateQuery(query: String?){
         insertCurrentQuery(query)
     }
+
+    val bookList = Pager(PagingConfig(1)){
+        BooksPagingSource(repository)
+    }.flow.cachedIn(viewModelScope)
 
 }
