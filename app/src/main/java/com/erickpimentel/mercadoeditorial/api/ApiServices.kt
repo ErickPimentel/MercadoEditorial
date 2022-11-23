@@ -5,10 +5,11 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface ApiService {
+interface ApiServices {
 
     @GET("book")
     fun getBooks(
+        @Query("page") page : Int?,
         @Query("codigo_status") statusCode : Int?,
         @Query("titulo") title : String?,
         @Query("isbn") isbn : String?

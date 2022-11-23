@@ -1,6 +1,5 @@
 package com.erickpimentel.mercadoeditorial.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -9,15 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
-import com.erickpimentel.mercadoeditorial.adapter.listener.Listener
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
+import javax.inject.Inject
 
-class BookAdapter(
-    private val listener: Listener
-): RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
-
-    private lateinit var context: Context
+class BookAdapter @Inject constructor(): RecyclerView.Adapter<BookAdapter.BookViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
         return BookViewHolder(BookViewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -42,11 +37,15 @@ class BookAdapter(
                 }
 
                 constraintLayout.setOnClickListener {
-                    listener.onItemClickListener(book)
+                    onItemClickListener?.let { it(book) }
                 }
             }
         }
+    }
 
+    private var onItemClickListener: ((Book) -> Unit)? = null
+    fun setOnItemClickListener(listener: (Book) -> Unit){
+        onItemClickListener = listener
     }
 
     private val differCallback = object : DiffUtil.ItemCallback<Book>(){
