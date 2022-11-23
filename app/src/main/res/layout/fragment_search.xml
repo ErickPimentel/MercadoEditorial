@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"
-        android:queryHint="Enter isbn or title"
+        android:queryHint="Enter ISBN or TITLE"
         android:theme="@style/WhiteSearchView"
         android:iconifiedByDefault="false"
         android:layout_marginTop="30dp"
