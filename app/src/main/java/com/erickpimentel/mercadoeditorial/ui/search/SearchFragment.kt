@@ -10,16 +10,20 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingSource
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
+import com.erickpimentel.mercadoeditorial.response.Book
 import com.erickpimentel.mercadoeditorial.response.BookListResponse
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -47,7 +51,9 @@ class SearchFragment : Fragment(){
 
         setOnQueryTextListener()
 
-        getBooksByCurrentQuery()
+        lifecycleScope.launchWhenCreated {
+            getBooksByCurrentQuery()
+        }
 
         bookRecyclerViewAdapter.setOnItemClickListener {
             bookViewModel.currentBook.value = it
@@ -57,9 +63,35 @@ class SearchFragment : Fragment(){
         return binding.root
     }
 
-    private fun getBooksByCurrentQuery() {
-        bookViewModel.currentQuery.observe(requireActivity()) {
-            if (!it.isNullOrEmpty()) getBooks(it)
+    private fun isNumeric(toCheck: String): Boolean {
+        return toCheck.all { char -> char.isDigit() }
+    }
+
+    private suspend fun getBooksByCurrentQuery() {
+        bookViewModel.currentQuery.observe(requireActivity()) { query ->
+            if (!query.isNullOrEmpty() && query.length >= 3){
+                var title: String? = null
+                var isbn: String? = null
+
+                if (isNumeric(query)) isbn = query
+                else title = query
+
+                lifecycleScope.launchWhenCreated {
+                    try {
+                        val response = apiRepository.getBooks(1, 1, title, isbn)
+                        val data = response.body()!!.books
+                        val responseData = mutableListOf<Book>()
+                        responseData.addAll(data)
+                        bookRecyclerViewAdapter.differ.submitList(data)
+
+                    } catch (e: Exception){
+                        Log.e("SearchFragment", "getBooksByCurrentQuery: $e", )
+                    }
+                }
+            }
+            else{
+                bookRecyclerViewAdapter.differ.submitList(listOf())
+            }
         }
     }
 
@@ -89,46 +121,5 @@ class SearchFragment : Fragment(){
     fun View.hideKeyboard(){
         val imn = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imn.hideSoftInputFromWindow(windowToken, 0)
-    }
-
-    private fun isNumeric(toCheck: String): Boolean {
-        return toCheck.all { char -> char.isDigit() }
-    }
-
-    private fun getBooks(query: String) {
-
-        var title: String? = null
-        var isbn: String? = null
-
-        if (isNumeric(query)) isbn = query
-        else title = query
-
-        val callBookApi = apiRepository.getBooksCall(null,null, title, isbn)
-        callBookApi.enqueue(object : Callback<BookListResponse> {
-            override fun onResponse(
-                call: Call<BookListResponse>,
-                response: Response<BookListResponse>
-            ) {
-                when (response.code()) {
-                    in 200..299 -> {
-                        response.body().let { body ->
-                            body?.books.let { data ->
-                                if (!data.isNullOrEmpty()) {
-                                    bookRecyclerViewAdapter.differ.submitList(data)
-                                }
-                            }
-                        }
-                    }
-                    in 300..599 -> {
-                        Log.e("HomeFragment", "Could not get book(s): ${response.code()}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<BookListResponse>, t: Throwable) {
-                Log.e("HomeFragment", "onFailure: ${t.message}")
-            }
-
-        })
     }
 }

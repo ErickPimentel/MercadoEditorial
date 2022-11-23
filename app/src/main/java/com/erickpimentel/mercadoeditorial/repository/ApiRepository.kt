@@ -8,7 +8,4 @@ class ApiRepository @Inject constructor(
     private val apiServices: ApiServices
 ) {
     suspend fun getBooks(page: Int?, statusCode: Int?, title: String?, isbn: String?) = apiServices.getBooks(page, statusCode, title, isbn)
-
-    fun getBooksCall(page: Int?, statusCode: Int?, title: String?, isbn: String?) = apiServices.getBooksCall(page, statusCode, title, isbn)
-
 }
