@@ -10,4 +10,5 @@
     <string name="query_hint">Enter isbn or title</string>
     <string name="could_not_load_more_books">Could not load more books!</string>
     <string name="retry">Retry</string>
+    <string name="all_available_books">All Available Books</string>
 </resources>
