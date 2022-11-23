@@ -13,31 +13,28 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
-import com.erickpimentel.mercadoeditorial.adapter.listener.Listener
-import com.erickpimentel.mercadoeditorial.api.ApiClient
-import com.erickpimentel.mercadoeditorial.api.ApiService
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
-import com.erickpimentel.mercadoeditorial.response.Book
+import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.BookListResponse
+import com.erickpimentel.mercadoeditorial.ui.home.HomeFragmentDirections
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class SearchFragment : Fragment(), Listener {
+@AndroidEntryPoint
+class SearchFragment : Fragment(){
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    private val bookAdapter by lazy { BookAdapter(this) }
-    private val api: ApiService by lazy {
-        ApiClient().getClient().create(ApiService::class.java)
-    }
+    @Inject
+    lateinit var apiRepository: ApiRepository
+
+    @Inject
+    lateinit var bookAdapter: BookAdapter
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
@@ -52,6 +49,11 @@ class SearchFragment : Fragment(), Listener {
         setOnQueryTextListener()
 
         getBooksByCurrentQuery()
+
+        bookAdapter.setOnItemClickListener {
+            bookViewModel.currentBook.value = it
+            findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
+        }
 
         return binding.root
     }
@@ -102,7 +104,7 @@ class SearchFragment : Fragment(), Listener {
         if (isNumeric(query)) isbn = query
         else title = query
 
-        val callBookApi = api.getBooks(null, title, isbn)
+        val callBookApi = apiRepository.getBooks(null,null, title, isbn)
         callBookApi.enqueue(object : Callback<BookListResponse> {
             override fun onResponse(
                 call: Call<BookListResponse>,
@@ -129,10 +131,5 @@ class SearchFragment : Fragment(), Listener {
             }
 
         })
-    }
-
-    override fun onItemClickListener(book: Book) {
-        bookViewModel.addCurrentBook(book)
-        findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
     }
 }

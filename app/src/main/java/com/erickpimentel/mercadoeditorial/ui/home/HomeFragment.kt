@@ -7,38 +7,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
-import com.erickpimentel.mercadoeditorial.adapter.listener.Listener
-import com.erickpimentel.mercadoeditorial.api.ApiClient
-import com.erickpimentel.mercadoeditorial.api.ApiService
 import com.erickpimentel.mercadoeditorial.databinding.FragmentHomeBinding
-import com.erickpimentel.mercadoeditorial.response.Book
+import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.BookListResponse
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class HomeFragment : Fragment(), Listener {
+@AndroidEntryPoint
+class HomeFragment : Fragment(){
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
-    private val bookAdapter by lazy { BookAdapter(this) }
-    private val api: ApiService by lazy {
-        ApiClient().getClient().create(ApiService::class.java)
-    }
+    @Inject
+    lateinit var apiRepository: ApiRepository
+
+    @Inject
+    lateinit var bookAdapter: BookAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,6 +46,11 @@ class HomeFragment : Fragment(), Listener {
 
         getAvailableBooks()
 
+        bookAdapter.setOnItemClickListener {
+            bookViewModel.currentBook.value = it
+            findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment())
+        }
+
         return binding.root
     }
 
@@ -63,12 +62,9 @@ class HomeFragment : Fragment(), Listener {
     }
 
     private fun getAvailableBooks() {
-        val callBookApi = api.getBooks(1, null, null)
+        val callBookApi = apiRepository.getBooks(null,1, null, null)
         callBookApi.enqueue(object : Callback<BookListResponse> {
-            override fun onResponse(
-                call: Call<BookListResponse>,
-                response: Response<BookListResponse>
-            ) {
+            override fun onResponse(call: Call<BookListResponse>, response: Response<BookListResponse>) {
                 binding.progressBar.visibility = View.GONE
                 when (response.code()) {
                     in 200..299 -> {
@@ -94,11 +90,6 @@ class HomeFragment : Fragment(), Listener {
             }
 
         })
-    }
-
-    override fun onItemClickListener(book: Book) {
-        bookViewModel.addCurrentBook(book)
-        findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment())
     }
 
 }
