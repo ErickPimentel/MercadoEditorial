@@ -30,7 +30,7 @@ data class Book(
     val isbn_relacionados: List<IsbnRelacionado>,
     val link: String,
     val materia_escolar: String,
-    val medidas: Medidas,
+    //val medidas: Medidas,
     val moeda: String,
     val origem: String,
     val preco: String,

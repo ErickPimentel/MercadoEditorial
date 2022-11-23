@@ -21,6 +21,9 @@ class BookViewModel @Inject constructor(private val repository: ApiRepository): 
     private val _currentQuery = MutableLiveData<String?>()
     val currentQuery: MutableLiveData<String?> get() = _currentQuery
 
+    private val _suggestionsList = arrayListOf<String>()
+    val suggestionsList: ArrayList<String> = _suggestionsList
+
     private fun insertCurrentBook(book: Book){
         _currentBook.value = book
     }
@@ -35,6 +38,14 @@ class BookViewModel @Inject constructor(private val repository: ApiRepository): 
 
     fun updateQuery(query: String?){
         insertCurrentQuery(query)
+    }
+
+    private fun insertSuggestion(suggestion: String){
+        _suggestionsList.add(suggestion)
+    }
+
+    fun addSuggestion(suggestion: String){
+        insertSuggestion(suggestion)
     }
 
     val bookList = Pager(PagingConfig(1)){
