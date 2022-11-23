@@ -33,7 +33,7 @@ class HomeFragment : Fragment(){
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val bookViewModel: BookViewModel by viewModels()
+    private val bookViewModel: BookViewModel by activityViewModels()
 
     @Inject
     lateinit var bookAdapter: BookAdapter

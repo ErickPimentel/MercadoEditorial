@@ -6,13 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import coil.load
 import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.ActivityMainBinding
 import com.erickpimentel.mercadoeditorial.databinding.FragmentBookDetailsBinding
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BookDetailsFragment : Fragment() {
 
     private var _binding: FragmentBookDetailsBinding? = null
