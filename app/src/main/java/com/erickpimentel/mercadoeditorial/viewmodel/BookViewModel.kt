@@ -37,8 +37,6 @@ class BookViewModel @Inject constructor(private val repository: ApiRepository): 
         insertCurrentQuery(query)
     }
 
-    val loading = MutableLiveData<Boolean>()
-
     val bookList = Pager(PagingConfig(1)){
         BooksPagingSource(repository)
     }.flow.cachedIn(viewModelScope)

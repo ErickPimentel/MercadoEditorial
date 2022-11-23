@@ -1,30 +1,21 @@
 package com.erickpimentel.mercadoeditorial.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
+import com.erickpimentel.mercadoeditorial.adapter.BookPagingDataAdapter
 import com.erickpimentel.mercadoeditorial.adapter.LoadMoreBooksAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentHomeBinding
-import com.erickpimentel.mercadoeditorial.repository.ApiRepository
-import com.erickpimentel.mercadoeditorial.response.Book
-import com.erickpimentel.mercadoeditorial.response.BookListResponse
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,7 +27,7 @@ class HomeFragment : Fragment(){
     private val bookViewModel: BookViewModel by activityViewModels()
 
     @Inject
-    lateinit var bookAdapter: BookAdapter
+    lateinit var bookPagingDataAdapter: BookPagingDataAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +37,7 @@ class HomeFragment : Fragment(){
 
         setupRecyclerView()
 
-        bookAdapter.setOnItemClickListener {
+        bookPagingDataAdapter.setOnItemClickListener {
             bookViewModel.addCurrentBook(it)
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment())
         }
@@ -60,12 +51,12 @@ class HomeFragment : Fragment(){
         binding.apply {
             lifecycleScope.launchWhenCreated {
                 bookViewModel.bookList.collect{
-                    bookAdapter.submitData(it)
+                    bookPagingDataAdapter.submitData(it)
                 }
             }
 
             lifecycleScope.launchWhenCreated {
-                bookAdapter.loadStateFlow.collect{
+                bookPagingDataAdapter.loadStateFlow.collect{
                     val state = it.refresh
                     progressBar.isVisible = state is LoadState.Loading
                 }
@@ -76,11 +67,10 @@ class HomeFragment : Fragment(){
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = bookAdapter
 
-            adapter = bookAdapter.withLoadStateFooter(
+            adapter = bookPagingDataAdapter.withLoadStateFooter(
                 LoadMoreBooksAdapter{
-                    bookAdapter.retry()
+                    bookPagingDataAdapter.retry()
                 }
             )
         }

@@ -16,4 +16,12 @@ interface ApiServices {
         @Query("isbn") isbn : String?
     ) : Response<BookListResponse>
 
+    @GET("book")
+    fun getBooksCall(
+        @Query("page") page : Int?,
+        @Query("codigo_status") statusCode : Int?,
+        @Query("titulo") title : String?,
+        @Query("isbn") isbn : String?
+    ) : Call<BookListResponse>
+
 }
