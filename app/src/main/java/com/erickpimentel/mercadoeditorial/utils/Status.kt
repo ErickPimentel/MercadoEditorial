@@ -1,24 +1,28 @@
 package com.erickpimentel.mercadoeditorial.utils
 
-enum class Status: IRequestCode{
-    AVAILABLE {
-        override fun code(): Int {
-            return 1
+enum class Status(val code: Int): IResult{
+    AVAILABLE(1) {
+        override fun result(): String {
+            return "Available"
         }
     },
-    UNAVAILABLE {
-        override fun code(): Int {
-            return 2
+    UNAVAILABLE(2) {
+        override fun result(): String {
+            return "Unavailable"
         }
     },
-    PRE_RELEASE {
-        override fun code(): Int {
-            return 3
+    PRE_RELEASE(3) {
+        override fun result(): String {
+            return "Pre release"
         }
     },
-    OUT_OF_CATALOG {
-        override fun code(): Int {
-            return 4
+    OUT_OF_CATALOG(4) {
+        override fun result(): String {
+            return "Out of catalog"
         }
+    };
+
+    companion object {
+        fun fromInt(code: Int) = values().first { it.code == code }
     }
 }
