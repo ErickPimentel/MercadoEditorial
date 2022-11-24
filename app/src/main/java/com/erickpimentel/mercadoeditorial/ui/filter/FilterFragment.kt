@@ -1,12 +1,10 @@
 package com.erickpimentel.mercadoeditorial.ui.filter
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.erickpimentel.mercadoeditorial.databinding.FragmentFilterBinding
@@ -29,13 +27,16 @@ class FilterFragment : Fragment() {
 
         binding.apply {
 
+            restoreRadioButtons()
+
             clearButton.setOnClickListener {
+                filterViewModel.clearAll()
                 typeRadioGroup.clearCheck()
                 statusRadioGroup.clearCheck()
             }
 
             applyButton.setOnClickListener {
-                validate()
+                updateFilter()
                 findNavController().popBackStack()
             }
         }
@@ -43,7 +44,23 @@ class FilterFragment : Fragment() {
         return binding.root
     }
 
-    private fun FragmentFilterBinding.validate() {
+    private fun FragmentFilterBinding.restoreRadioButtons() {
+        when (filterViewModel.type.value) {
+            Type.BOOK -> typeRadioGroup.check(bookRadioButton.id)
+            Type.EBOOK -> typeRadioGroup.check(ebookRadioButton.id)
+            else -> {}
+        }
+
+        when (filterViewModel.status.value) {
+            Status.AVAILABLE -> statusRadioGroup.check(availableRadioButton.id)
+            Status.UNAVAILABLE -> statusRadioGroup.check(unavailableRadioButton.id)
+            Status.PRE_RELEASE -> statusRadioGroup.check(preReleaseRadioButton.id)
+            Status.OUT_OF_CATALOG -> statusRadioGroup.check(outOfCatalogRadioButton.id)
+            else -> {}
+        }
+    }
+
+    private fun FragmentFilterBinding.updateFilter() {
         when (typeRadioGroup.checkedRadioButtonId) {
             bookRadioButton.id -> filterViewModel.updateType(Type.BOOK)
             ebookRadioButton.id -> filterViewModel.updateType(Type.EBOOK)
