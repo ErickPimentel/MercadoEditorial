@@ -11,6 +11,7 @@ import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
+import com.erickpimentel.mercadoeditorial.utils.ParentalRating
 import com.erickpimentel.mercadoeditorial.utils.Status
 import javax.inject.Inject
 
@@ -35,6 +36,7 @@ class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRe
                 bookTitle.text = book.titulo
                 bookIsbn.text = holder.itemView.context.resources.getString(R.string.isbn, book.isbn)
                 bookType.text = book.formato
+                parentalRatingImageView.setImageResource(ParentalRating.fromInt(book.classificacao_indicativa).result())
                 bookStatus.text = Status.fromInt(book.status).result()
                 bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco.toFloat())
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){

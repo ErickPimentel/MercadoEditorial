@@ -1,6 +1,6 @@
 package com.erickpimentel.mercadoeditorial.utils
 
-enum class Status(val code: Int): IResult{
+enum class Status(val code: Int): IStatus{
     AVAILABLE(1) {
         override fun result(): String {
             return "Available"

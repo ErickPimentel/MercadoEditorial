@@ -10,6 +10,7 @@ import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
+import com.erickpimentel.mercadoeditorial.utils.ParentalRating
 import javax.inject.Inject
 
 class BookPagingDataAdapter @Inject constructor(): PagingDataAdapter<Book, BookPagingDataAdapter.BookViewHolder>(differCallback) {
@@ -30,6 +31,7 @@ class BookPagingDataAdapter @Inject constructor(): PagingDataAdapter<Book, BookP
                 bookTitle.text = book.titulo
                 bookIsbn.text = holder.itemView.context.resources.getString(R.string.isbn, book.isbn)
                 bookType.text = book.formato
+                parentalRatingImageView.setImageResource(ParentalRating.fromInt(book.classificacao_indicativa).result())
                 bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco.toFloat())
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)

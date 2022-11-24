@@ -7,7 +7,7 @@ data class Book(
     val booktrailer: String,
     val catalogacao: Catalogacao,
     val certificacao_inmetro: String,
-    val classificacao_indicativa: String,
+    val classificacao_indicativa: Int,
     val codigo_de_barras: String,
     val codigo_fiscal: String,
     val codigo_interno: String,

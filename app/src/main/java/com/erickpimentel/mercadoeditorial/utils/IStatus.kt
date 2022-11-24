@@ -1,5 +1,5 @@
 package com.erickpimentel.mercadoeditorial.utils
 
-interface IResult {
+interface IStatus {
     fun result(): String
 }
