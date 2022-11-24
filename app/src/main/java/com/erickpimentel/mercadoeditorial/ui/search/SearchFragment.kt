@@ -122,7 +122,6 @@ class SearchFragment : Fragment(){
             }
             else{
                 bookRecyclerViewAdapter.differ.submitList(listOf())
-                binding.noResults.visibility = View.VISIBLE
             }
         }
     }
@@ -141,7 +140,6 @@ class SearchFragment : Fragment(){
                 val responseData = mutableListOf<Book>()
                 responseData.addAll(data)
                 bookRecyclerViewAdapter.differ.submitList(data)
-                binding.noResults.visibility = View.GONE
 
             } catch (e: Exception) {
                 Log.e("SearchFragment", "getBooksByCurrentQuery: $e")
