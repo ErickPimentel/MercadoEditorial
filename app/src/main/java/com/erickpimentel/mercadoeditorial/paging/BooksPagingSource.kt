@@ -11,7 +11,7 @@ class BooksPagingSource(private val repository: ApiRepository): PagingSource<Int
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Book> {
         return try {
             val currentPage = params.key ?: 1
-            val response = repository.getBooks(currentPage,null, 1, null, null)
+            val response = repository.getBooks(currentPage,null, 1, null, null, null)
             val data = response.body()!!.books
             val responseData = mutableListOf<Book>()
             responseData.addAll(data)

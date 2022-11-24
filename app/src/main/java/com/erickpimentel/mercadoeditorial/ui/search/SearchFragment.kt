@@ -135,7 +135,8 @@ class SearchFragment : Fragment(){
                     filterViewModel.type.value?.name,
                     filterViewModel.status.value?.code,
                     title,
-                    isbn
+                    isbn,
+                    null
                 )
                 val data = response.body()?.books
 

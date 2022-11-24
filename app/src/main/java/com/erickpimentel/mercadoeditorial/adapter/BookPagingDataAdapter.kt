@@ -10,7 +10,6 @@ import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
-import com.erickpimentel.mercadoeditorial.utils.Status
 import javax.inject.Inject
 
 class BookPagingDataAdapter @Inject constructor(): PagingDataAdapter<Book, BookPagingDataAdapter.BookViewHolder>(differCallback) {
@@ -20,15 +19,16 @@ class BookPagingDataAdapter @Inject constructor(): PagingDataAdapter<Book, BookP
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
-        holder.bind(getItem(position)!!)
+        holder.bind(holder, getItem(position)!!)
         holder.setIsRecyclable(false)
     }
 
     inner class BookViewHolder(private val binding: BookViewBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(book: Book){
+        fun bind(holder: BookViewHolder, book: Book){
             binding.apply {
                 bookTitle.text = book.titulo
                 bookType.text = book.formato
+                bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco)
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)

@@ -1,5 +1,6 @@
 package com.erickpimentel.mercadoeditorial.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
@@ -20,7 +21,7 @@ class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRe
     }
 
     override fun onBindViewHolder(holder: BookViewHolder, position: Int) {
-        holder.bind(differ.currentList[position])
+        holder.bind(holder, differ.currentList[position])
     }
 
     override fun getItemCount(): Int {
@@ -28,11 +29,13 @@ class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRe
     }
 
     inner class BookViewHolder(private val binding: BookViewBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(book: Book){
+
+        fun bind(holder: BookViewHolder, book: Book){
             binding.apply {
                 bookTitle.text = book.titulo
                 bookType.text = book.formato
                 bookStatus.text = Status.fromInt(book.status).result()
+                bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco)
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)

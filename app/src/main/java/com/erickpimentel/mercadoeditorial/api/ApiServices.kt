@@ -14,7 +14,8 @@ interface ApiServices {
         @Query("formato") type : String?,
         @Query("codigo_status") statusCode : Int?,
         @Query("titulo") title : String?,
-        @Query("isbn") isbn : String?
+        @Query("isbn") isbn : String?,
+        @Query("preco") price : String?,
     ) : Response<BookListResponse>
 
 }
