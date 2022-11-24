@@ -23,10 +23,6 @@ class BookDetailsFragment : Fragment() {
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,10 +30,11 @@ class BookDetailsFragment : Fragment() {
         _binding = FragmentBookDetailsBinding.inflate(inflater, container, false)
 
         binding.apply {
-            bookViewModel.currentBook.value?.let {
-                bookTitle.text = it.titulo
-                bookSynopsis.text = it.sinopse
-                bookImageView.load(it.imagens.imagem_primeira_capa.pequena){
+            bookViewModel.currentBook.value?.let { book ->
+                bookTitle.text = book.titulo
+                bookSynopsis.text = book.sinopse
+                bookPrice.text = getString(R.string.price_symbol, book.preco.toFloat())
+                bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)
                     scale(Scale.FILL)
