@@ -122,6 +122,7 @@ class SearchFragment : Fragment(){
             }
             else{
                 bookRecyclerViewAdapter.differ.submitList(listOf())
+                binding.noResults.visibility = View.VISIBLE
             }
         }
     }
@@ -136,10 +137,18 @@ class SearchFragment : Fragment(){
                     title,
                     isbn
                 )
-                val data = response.body()!!.books
-                val responseData = mutableListOf<Book>()
-                responseData.addAll(data)
-                bookRecyclerViewAdapter.differ.submitList(data)
+                val data = response.body()?.books
+
+                if (!data.isNullOrEmpty()){
+                    val responseData = mutableListOf<Book>()
+                    responseData.addAll(data)
+                    bookRecyclerViewAdapter.differ.submitList(data)
+                    binding.noResults.visibility = View.GONE
+                }else {
+                    bookRecyclerViewAdapter.differ.submitList(listOf())
+                    binding.noResults.visibility = View.VISIBLE
+                }
+
 
             } catch (e: Exception) {
                 Log.e("SearchFragment", "getBooksByCurrentQuery: $e")
