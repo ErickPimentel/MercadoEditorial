@@ -1,5 +1,6 @@
 package com.erickpimentel.mercadoeditorial.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,10 +17,10 @@ import javax.inject.Inject
 class BookViewModel @Inject constructor(private val repository: ApiRepository): ViewModel() {
 
     private val _currentBook = MutableLiveData<Book>()
-    val currentBook: MutableLiveData<Book> get() = _currentBook
+    val currentBook: LiveData<Book> get() = _currentBook
 
     private val _currentQuery = MutableLiveData<String?>()
-    val currentQuery: MutableLiveData<String?> get() = _currentQuery
+    val currentQuery: LiveData<String?> get() = _currentQuery
 
     private val _suggestionsList = arrayListOf<String>()
     val suggestionsList: ArrayList<String> = _suggestionsList

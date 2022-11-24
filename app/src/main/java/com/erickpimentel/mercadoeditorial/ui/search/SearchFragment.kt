@@ -28,6 +28,7 @@ import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.Book
 import com.erickpimentel.mercadoeditorial.response.BookListResponse
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
+import com.erickpimentel.mercadoeditorial.viewmodel.FilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
 import retrofit2.Callback
@@ -49,6 +50,8 @@ class SearchFragment : Fragment(){
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
+    private val filterViewModel: FilterViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,8 +72,12 @@ class SearchFragment : Fragment(){
 
         bookRecyclerViewAdapter.setOnItemClickListener {
             bookViewModel.addSuggestion(binding.searchView.query.toString())
-            bookViewModel.currentBook.value = it
+            bookViewModel.addCurrentBook(it)
             findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
+        }
+
+        binding.filterImageView.setOnClickListener {
+            findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToFilterFragment())
         }
 
         return binding.root
@@ -118,7 +125,12 @@ class SearchFragment : Fragment(){
 
                 lifecycleScope.launchWhenCreated {
                     try {
-                        val response = apiRepository.getBooks(1, 1, title, isbn)
+                        val response = apiRepository.getBooks(
+                            1,
+                            filterViewModel.type.value?.name,
+                            filterViewModel.status.value?.code(),
+                            title,
+                            isbn)
                         val data = response.body()!!.books
                         val responseData = mutableListOf<Book>()
                         responseData.addAll(data)

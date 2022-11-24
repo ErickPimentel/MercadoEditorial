@@ -11,6 +11,7 @@ interface ApiServices {
     @GET("book")
     suspend fun getBooks(
         @Query("page") page : Int?,
+        @Query("formato") type : String?,
         @Query("codigo_status") statusCode : Int?,
         @Query("titulo") title : String?,
         @Query("isbn") isbn : String?

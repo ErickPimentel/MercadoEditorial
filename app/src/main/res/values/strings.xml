@@ -11,4 +11,15 @@
     <string name="could_not_load_more_books">Could not load more books!</string>
     <string name="retry">Retry</string>
     <string name="all_available_books">All Available Books</string>
+    <string name="filter">Filter</string>
+    <string name="book">BOOK</string>
+    <string name="ebook">EBOOK</string>
+    <string name="type">Type</string>
+    <string name="status">Status</string>
+    <string name="available">Available</string>
+    <string name="unavailable">Unavailable</string>
+    <string name="pre_release">Pre Release</string>
+    <string name="out_of_catalog">Out of catalog</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
 </resources>

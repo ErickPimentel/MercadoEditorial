@@ -22,10 +22,18 @@
         <action
             android:id="@+id/action_searchFragment_to_bookDetailsFragment"
             app:destination="@id/bookDetailsFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_filterFragment"
+            app:destination="@id/filterFragment" />
     </fragment>
     <fragment
         android:id="@+id/bookDetailsFragment"
         android:name="com.erickpimentel.mercadoeditorial.ui.book.BookDetailsFragment"
         android:label="Book Details"
         tools:layout="@layout/fragment_book_details" />
+    <fragment
+        android:id="@+id/filterFragment"
+        android:name="com.erickpimentel.mercadoeditorial.ui.filter.FilterFragment"
+        android:label="Filter"
+        tools:layout="@layout/fragment_filter" />
 </navigation>
