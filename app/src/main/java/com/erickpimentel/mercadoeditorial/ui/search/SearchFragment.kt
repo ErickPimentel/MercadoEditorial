@@ -122,7 +122,7 @@ class SearchFragment : Fragment(){
             }
             else{
                 bookRecyclerViewAdapter.differ.submitList(listOf())
-                binding.noResults.visibility = View.VISIBLE
+                binding.noResults.visibility = View.GONE
             }
         }
     }
