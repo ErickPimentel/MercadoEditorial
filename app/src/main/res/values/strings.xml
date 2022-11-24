@@ -22,6 +22,6 @@
     <string name="out_of_catalog">Out of catalog</string>
     <string name="apply">Apply</string>
     <string name="clear">Clear</string>
-    <string name="price_symbol">R$ %s</string>
+    <string name="price_symbol">R$ %.2f </string>
     <string name="synopsis">Synopsis</string>
 </resources>

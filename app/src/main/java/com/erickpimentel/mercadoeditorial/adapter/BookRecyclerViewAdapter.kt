@@ -35,7 +35,7 @@ class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRe
                 bookTitle.text = book.titulo
                 bookType.text = book.formato
                 bookStatus.text = Status.fromInt(book.status).result()
-                bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco)
+                bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco.toFloat())
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)
