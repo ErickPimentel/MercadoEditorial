@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import coil.load
+import coil.request.ImageRequest
 import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.ActivityMainBinding
@@ -34,15 +35,22 @@ class BookDetailsFragment : Fragment() {
                 bookTitle.text = book.titulo
                 bookSynopsis.text = book.sinopse
                 bookPrice.text = getString(R.string.price_symbol, book.preco.toFloat())
-                bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
-                    crossfade(true)
-                    placeholder(R.drawable.placeholder)
-                    scale(Scale.FILL)
-                }
+
+                val bookImage = book.imagens.imagem_primeira_capa.pequena
+                bookImageView.load(bookImage){ setPlaceHolder() }
+                bookBackgroundImageView.load(bookImage){ setPlaceHolder() }
+
+
             }
         }
 
         return binding.root
+    }
+
+    private fun ImageRequest.Builder.setPlaceHolder() {
+        crossfade(true)
+        placeholder(R.drawable.placeholder)
+        scale(Scale.FILL)
     }
 
 
