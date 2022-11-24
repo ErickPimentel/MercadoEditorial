@@ -33,6 +33,7 @@ class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRe
         fun bind(holder: BookViewHolder, book: Book){
             binding.apply {
                 bookTitle.text = book.titulo
+                bookIsbn.text = holder.itemView.context.resources.getString(R.string.isbn, book.isbn)
                 bookType.text = book.formato
                 bookStatus.text = Status.fromInt(book.status).result()
                 bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco.toFloat())

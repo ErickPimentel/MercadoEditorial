@@ -24,4 +24,5 @@
     <string name="clear">Clear</string>
     <string name="price_symbol">R$ %.2f </string>
     <string name="synopsis">Synopsis</string>
+    <string name="isbn">ISBN: %s</string>
 </resources>

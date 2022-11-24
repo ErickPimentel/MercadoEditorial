@@ -28,6 +28,7 @@ class BookPagingDataAdapter @Inject constructor(): PagingDataAdapter<Book, BookP
 
             binding.apply {
                 bookTitle.text = book.titulo
+                bookIsbn.text = holder.itemView.context.resources.getString(R.string.isbn, book.isbn)
                 bookType.text = book.formato
                 bookPrice.text = holder.itemView.context.resources.getString(R.string.price_symbol, book.preco.toFloat())
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
