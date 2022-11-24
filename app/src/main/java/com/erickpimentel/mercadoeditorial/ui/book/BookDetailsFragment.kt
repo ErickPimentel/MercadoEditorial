@@ -36,6 +36,7 @@ class BookDetailsFragment : Fragment() {
         binding.apply {
             bookViewModel.currentBook.value?.let {
                 bookTitle.text = it.titulo
+                bookSynopsis.text = it.sinopse
                 bookImageView.load(it.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)

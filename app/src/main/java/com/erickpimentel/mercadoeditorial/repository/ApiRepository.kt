@@ -7,5 +7,5 @@ import javax.inject.Inject
 class ApiRepository @Inject constructor(
     private val apiServices: ApiServices
 ) {
-    suspend fun getBooks(page: Int?, type : String?, statusCode: Int?, title: String?, isbn: String?, price: String?) = apiServices.getBooks(page, type, statusCode, title, isbn, price)
+    suspend fun getBooks(page: Int?, type : String?, statusCode: Int?, title: String?, isbn: String?, price: String?, synopsis: String?) = apiServices.getBooks(page, type, statusCode, title, isbn, price, synopsis)
 }

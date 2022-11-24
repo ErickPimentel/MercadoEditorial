@@ -16,6 +16,7 @@ interface ApiServices {
         @Query("titulo") title : String?,
         @Query("isbn") isbn : String?,
         @Query("preco") price : String?,
+        @Query("sinopse") synopsis : String?,
     ) : Response<BookListResponse>
 
 }
