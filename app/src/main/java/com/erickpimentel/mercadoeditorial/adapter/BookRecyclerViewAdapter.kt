@@ -10,6 +10,7 @@ import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
+import com.erickpimentel.mercadoeditorial.utils.Status
 import javax.inject.Inject
 
 class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRecyclerViewAdapter.BookViewHolder>() {
@@ -30,6 +31,8 @@ class BookRecyclerViewAdapter @Inject constructor(): RecyclerView.Adapter<BookRe
         fun bind(book: Book){
             binding.apply {
                 bookTitle.text = book.titulo
+                bookType.text = book.formato
+                bookStatus.text = Status.fromInt(book.status).result()
                 bookImageView.load(book.imagens.imagem_primeira_capa.pequena){
                     crossfade(true)
                     placeholder(R.drawable.placeholder)

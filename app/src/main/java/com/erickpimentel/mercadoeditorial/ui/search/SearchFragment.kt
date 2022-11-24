@@ -19,19 +19,15 @@ import android.widget.SimpleCursorAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.paging.PagingSource
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.Book
-import com.erickpimentel.mercadoeditorial.response.BookListResponse
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
+import com.erickpimentel.mercadoeditorial.viewmodel.FilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.HttpException
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -49,6 +45,8 @@ class SearchFragment : Fragment(){
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
+    private val filterViewModel: FilterViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -64,13 +62,17 @@ class SearchFragment : Fragment(){
         setOnSuggestionListener()
 
         lifecycleScope.launchWhenCreated {
-            getBooksByCurrentQuery()
+            setCurrentQueryObserver()
         }
 
         bookRecyclerViewAdapter.setOnItemClickListener {
             bookViewModel.addSuggestion(binding.searchView.query.toString())
-            bookViewModel.currentBook.value = it
+            bookViewModel.addCurrentBook(it)
             findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
+        }
+
+        binding.filterImageView.setOnClickListener {
+            findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToFilterFragment())
         }
 
         return binding.root
@@ -107,30 +109,42 @@ class SearchFragment : Fragment(){
         return toCheck.all { char -> char.isDigit() }
     }
 
-    private suspend fun getBooksByCurrentQuery() {
+    private fun setCurrentQueryObserver() {
         bookViewModel.currentQuery.observe(requireActivity()) { query ->
             if (!query.isNullOrEmpty() && query.length >= 2){
+
                 var title: String? = null
                 var isbn: String? = null
-
                 if (isNumeric(query)) isbn = query
                 else title = query
 
-                lifecycleScope.launchWhenCreated {
-                    try {
-                        val response = apiRepository.getBooks(1, 1, title, isbn)
-                        val data = response.body()!!.books
-                        val responseData = mutableListOf<Book>()
-                        responseData.addAll(data)
-                        bookRecyclerViewAdapter.differ.submitList(data)
-
-                    } catch (e: Exception){
-                        Log.e("SearchFragment", "getBooksByCurrentQuery: $e", )
-                    }
-                }
+                getBooksByCurrentQuery(title, isbn)
             }
             else{
                 bookRecyclerViewAdapter.differ.submitList(listOf())
+                binding.noResults.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun getBooksByCurrentQuery(title: String?, isbn: String?) {
+        lifecycleScope.launchWhenCreated {
+            try {
+                val response = apiRepository.getBooks(
+                    1,
+                    filterViewModel.type.value?.name,
+                    filterViewModel.status.value?.code,
+                    title,
+                    isbn
+                )
+                val data = response.body()!!.books
+                val responseData = mutableListOf<Book>()
+                responseData.addAll(data)
+                bookRecyclerViewAdapter.differ.submitList(data)
+                binding.noResults.visibility = View.GONE
+
+            } catch (e: Exception) {
+                Log.e("SearchFragment", "getBooksByCurrentQuery: $e")
             }
         }
     }
