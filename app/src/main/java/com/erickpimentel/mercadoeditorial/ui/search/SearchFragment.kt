@@ -25,7 +25,6 @@ import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
-import com.erickpimentel.mercadoeditorial.viewmodel.FilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -42,8 +41,6 @@ class SearchFragment : Fragment(){
     lateinit var bookRecyclerViewAdapter: BookRecyclerViewAdapter
 
     private val bookViewModel: BookViewModel by activityViewModels()
-
-    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -113,10 +110,7 @@ class SearchFragment : Fragment(){
                 bookViewModel.updateQuery(p0)
 
                 lifecycleScope.launchWhenCreated {
-                    val bookList = bookViewModel.getSearchResultStream(p0).cachedIn(lifecycleScope)
-                    bookList.collect{
-                        bookRecyclerViewAdapter.submitData(it)
-                    }
+                    getSearchResult()
                 }
                 return false
             }
@@ -125,16 +119,25 @@ class SearchFragment : Fragment(){
                 bookViewModel.updateQuery(p0)
                 addSuggestion(p0, suggestions, cursorAdapter)
 
-
                 lifecycleScope.launchWhenCreated {
-                    val bookList = bookViewModel.getSearchResultStream(p0).cachedIn(lifecycleScope)
-                    bookList.collect{
-                        bookRecyclerViewAdapter.submitData(it)
-                    }
+                    getSearchResult()
                 }
                 return false
             }
         })
+    }
+
+    private fun getSearchResult(){
+        lifecycleScope.launchWhenCreated {
+            val bookList = bookViewModel.getSearchResultStream(
+                bookViewModel.currentQuery.value,
+                bookViewModel.type.value,
+                bookViewModel.status.value
+            ).cachedIn(lifecycleScope)
+            bookList.collect{
+                bookRecyclerViewAdapter.submitData(it)
+            }
+        }
     }
 
     private fun addSuggestion(newText: String?, suggestions: List<String>, cursorAdapter: SimpleCursorAdapter) {

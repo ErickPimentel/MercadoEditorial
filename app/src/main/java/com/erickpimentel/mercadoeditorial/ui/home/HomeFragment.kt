@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.erickpimentel.mercadoeditorial.adapter.BookPagingDataAdapter
 import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
 import com.erickpimentel.mercadoeditorial.adapter.LoadMoreBooksAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentHomeBinding

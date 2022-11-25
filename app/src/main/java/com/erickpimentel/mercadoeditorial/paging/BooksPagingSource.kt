@@ -4,12 +4,16 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.Book
+import com.erickpimentel.mercadoeditorial.utils.Status
+import com.erickpimentel.mercadoeditorial.utils.Type
 import retrofit2.HttpException
 
 class BooksPagingSource(
     private val repository: ApiRepository,
-    private val currentQuery: String?
-    ): PagingSource<Int, Book>() {
+    private val currentQuery: String?,
+    private val type: Type?,
+    private val status: Status?
+): PagingSource<Int, Book>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Book> {
         return try {
@@ -21,7 +25,14 @@ class BooksPagingSource(
             }
 
             val currentPage = params.key ?: 1
-            val response = repository.getBooks(currentPage,null, 1, title, isbn, null, null)
+            val response = repository.getBooks(
+                currentPage,
+                type?.name,
+                status?.code ?: 1,
+                title,
+                isbn,
+                null,
+                null)
             val data = response.body()!!.books
             val responseData = mutableListOf<Book>()
             responseData.addAll(data)

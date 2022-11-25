@@ -10,14 +10,14 @@ import androidx.navigation.fragment.findNavController
 import com.erickpimentel.mercadoeditorial.databinding.FragmentFilterBinding
 import com.erickpimentel.mercadoeditorial.utils.Status
 import com.erickpimentel.mercadoeditorial.utils.Type
-import com.erickpimentel.mercadoeditorial.viewmodel.FilterViewModel
+import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
 
 class FilterFragment : Fragment() {
 
     private var _binding: FragmentFilterBinding? = null
     private val binding get() = _binding!!
 
-    private val filterViewModel: FilterViewModel by activityViewModels()
+    private val bookViewModel: BookViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,7 +30,7 @@ class FilterFragment : Fragment() {
             restoreRadioButtons()
 
             clearButton.setOnClickListener {
-                filterViewModel.clearAll()
+                bookViewModel.clearAllRadioButtons()
                 typeRadioGroup.clearCheck()
                 statusRadioGroup.clearCheck()
             }
@@ -45,13 +45,13 @@ class FilterFragment : Fragment() {
     }
 
     private fun FragmentFilterBinding.restoreRadioButtons() {
-        when (filterViewModel.type.value) {
+        when (bookViewModel.type.value) {
             Type.BOOK -> typeRadioGroup.check(bookRadioButton.id)
             Type.EBOOK -> typeRadioGroup.check(ebookRadioButton.id)
             else -> {}
         }
 
-        when (filterViewModel.status.value) {
+        when (bookViewModel.status.value) {
             Status.AVAILABLE -> statusRadioGroup.check(availableRadioButton.id)
             Status.UNAVAILABLE -> statusRadioGroup.check(unavailableRadioButton.id)
             Status.PRE_RELEASE -> statusRadioGroup.check(preReleaseRadioButton.id)
@@ -62,17 +62,17 @@ class FilterFragment : Fragment() {
 
     private fun FragmentFilterBinding.updateFilter() {
         when (typeRadioGroup.checkedRadioButtonId) {
-            bookRadioButton.id -> filterViewModel.updateType(Type.BOOK)
-            ebookRadioButton.id -> filterViewModel.updateType(Type.EBOOK)
-            else -> filterViewModel.updateType(null)
+            bookRadioButton.id -> bookViewModel.updateType(Type.BOOK)
+            ebookRadioButton.id -> bookViewModel.updateType(Type.EBOOK)
+            else -> bookViewModel.updateType(null)
         }
 
         when (statusRadioGroup.checkedRadioButtonId) {
-            availableRadioButton.id -> filterViewModel.updateStatus(Status.AVAILABLE)
-            unavailableRadioButton.id -> filterViewModel.updateStatus(Status.UNAVAILABLE)
-            preReleaseRadioButton.id -> filterViewModel.updateStatus(Status.PRE_RELEASE)
-            outOfCatalogRadioButton.id -> filterViewModel.updateStatus(Status.OUT_OF_CATALOG)
-            else -> filterViewModel.updateStatus(null)
+            availableRadioButton.id -> bookViewModel.updateStatus(Status.AVAILABLE)
+            unavailableRadioButton.id -> bookViewModel.updateStatus(Status.UNAVAILABLE)
+            preReleaseRadioButton.id -> bookViewModel.updateStatus(Status.PRE_RELEASE)
+            outOfCatalogRadioButton.id -> bookViewModel.updateStatus(Status.OUT_OF_CATALOG)
+            else -> bookViewModel.updateStatus(null)
         }
     }
 }
