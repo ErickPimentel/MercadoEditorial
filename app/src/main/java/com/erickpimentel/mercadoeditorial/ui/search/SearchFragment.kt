@@ -7,7 +7,6 @@ import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.Bundle
 import android.provider.BaseColumns
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,16 +18,14 @@ import android.widget.SimpleCursorAdapter
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.cachedIn
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.R
-import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
+import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
-import com.erickpimentel.mercadoeditorial.response.Book
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
-import com.erickpimentel.mercadoeditorial.viewmodel.FilterViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Response
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,11 +38,9 @@ class SearchFragment : Fragment(){
     lateinit var apiRepository: ApiRepository
 
     @Inject
-    lateinit var bookRecyclerViewAdapter: BookRecyclerViewAdapter
+    lateinit var bookAdapter: BookAdapter
 
     private val bookViewModel: BookViewModel by activityViewModels()
-
-    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,11 +56,7 @@ class SearchFragment : Fragment(){
 
         setOnSuggestionListener()
 
-        lifecycleScope.launchWhenCreated {
-            setCurrentQueryObserver()
-        }
-
-        bookRecyclerViewAdapter.setOnItemClickListener {
+        bookAdapter.setOnItemClickListener {
             bookViewModel.addSuggestion(binding.searchView.query.toString())
             bookViewModel.addCurrentBook(it)
             findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
@@ -105,63 +96,10 @@ class SearchFragment : Fragment(){
         })
     }
 
-    private fun isNumeric(toCheck: String): Boolean {
-        return toCheck.all { char -> char.isDigit() }
-    }
-
-    private fun setCurrentQueryObserver() {
-        bookViewModel.currentQuery.observe(requireActivity()) { query ->
-            if (!query.isNullOrEmpty() && query.length >= 2){
-
-                var title: String? = null
-                var isbn: String? = null
-                if (isNumeric(query)) isbn = query
-                else title = query
-
-                getBooksByCurrentQuery(title, isbn)
-            }
-            else{
-                bookRecyclerViewAdapter.differ.submitList(listOf())
-                binding.noResults.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun getBooksByCurrentQuery(title: String?, isbn: String?) {
-        lifecycleScope.launchWhenCreated {
-            try {
-                val response = apiRepository.getBooks(
-                    1,
-                    filterViewModel.type.value?.name,
-                    filterViewModel.status.value?.code,
-                    title,
-                    isbn,
-                    null,
-                    null
-                )
-                val data = response.body()?.books
-
-                if (!data.isNullOrEmpty()){
-                    val responseData = mutableListOf<Book>()
-                    responseData.addAll(data)
-                    bookRecyclerViewAdapter.differ.submitList(data)
-                    binding.noResults.visibility = View.GONE
-                }else {
-                    bookRecyclerViewAdapter.differ.submitList(listOf())
-                    binding.noResults.visibility = View.VISIBLE
-                }
-
-
-            } catch (e: Exception) {
-                Log.e("SearchFragment", "getBooksByCurrentQuery: $e")
-            }
-        }
-    }
-
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = bookRecyclerViewAdapter
+            adapter = bookAdapter
         }
     }
 
@@ -170,15 +108,36 @@ class SearchFragment : Fragment(){
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 view?.hideKeyboard()
                 bookViewModel.updateQuery(p0)
+
+                lifecycleScope.launchWhenCreated {
+                    getSearchResult()
+                }
                 return false
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
                 bookViewModel.updateQuery(p0)
                 addSuggestion(p0, suggestions, cursorAdapter)
+
+                lifecycleScope.launchWhenCreated {
+                    getSearchResult()
+                }
                 return false
             }
         })
+    }
+
+    private fun getSearchResult(){
+        lifecycleScope.launchWhenCreated {
+            val bookList = bookViewModel.getSearchResultStream(
+                bookViewModel.currentQuery.value,
+                bookViewModel.type.value,
+                bookViewModel.status.value
+            ).cachedIn(lifecycleScope)
+            bookList.collect{
+                bookAdapter.submitData(it)
+            }
+        }
     }
 
     private fun addSuggestion(newText: String?, suggestions: List<String>, cursorAdapter: SimpleCursorAdapter) {
