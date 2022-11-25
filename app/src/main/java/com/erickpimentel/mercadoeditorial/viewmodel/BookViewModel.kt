@@ -6,11 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.erickpimentel.mercadoeditorial.paging.BooksPagingSource
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,8 +51,12 @@ class BookViewModel @Inject constructor(private val repository: ApiRepository): 
         insertSuggestion(suggestion)
     }
 
-    val bookList = Pager(PagingConfig(1)){
-        BooksPagingSource(repository)
-    }.flow.cachedIn(viewModelScope)
+    val bookList = getSearchResultStream(currentQuery.value).cachedIn(viewModelScope)
 
+    fun getSearchResultStream(query: String?): Flow<PagingData<Book>> {
+        return Pager(
+            config = PagingConfig(1),
+            pagingSourceFactory = { BooksPagingSource(repository, query) }
+        ).flow
+    }
 }

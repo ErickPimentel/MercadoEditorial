@@ -6,12 +6,22 @@ import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.response.Book
 import retrofit2.HttpException
 
-class BooksPagingSource(private val repository: ApiRepository): PagingSource<Int, Book>() {
+class BooksPagingSource(
+    private val repository: ApiRepository,
+    private val currentQuery: String?
+    ): PagingSource<Int, Book>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Book> {
         return try {
+            var title: String? = null
+            var isbn: String? = null
+            currentQuery?.let {
+                if (isNumeric(it)) isbn = it
+                else title = it
+            }
+
             val currentPage = params.key ?: 1
-            val response = repository.getBooks(currentPage,null, 1, null, null, null, null)
+            val response = repository.getBooks(currentPage,null, 1, title, isbn, null, null)
             val data = response.body()!!.books
             val responseData = mutableListOf<Book>()
             responseData.addAll(data)
@@ -30,5 +40,9 @@ class BooksPagingSource(private val repository: ApiRepository): PagingSource<Int
 
     override fun getRefreshKey(state: PagingState<Int, Book>): Int? {
         return null
+    }
+
+    private fun isNumeric(toCheck: String): Boolean {
+        return toCheck.all { char -> char.isDigit() }
     }
 }

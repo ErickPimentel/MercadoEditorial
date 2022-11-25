@@ -10,7 +10,6 @@ import coil.size.Scale
 import com.erickpimentel.mercadoeditorial.R
 import com.erickpimentel.mercadoeditorial.databinding.BookViewBinding
 import com.erickpimentel.mercadoeditorial.response.Book
-import com.erickpimentel.mercadoeditorial.utils.ParentalRating
 import javax.inject.Inject
 
 class BookPagingDataAdapter @Inject constructor(): PagingDataAdapter<Book, BookPagingDataAdapter.BookViewHolder>(differCallback) {

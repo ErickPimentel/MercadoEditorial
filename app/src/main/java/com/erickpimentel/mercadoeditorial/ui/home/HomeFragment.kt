@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.adapter.BookPagingDataAdapter
+import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
 import com.erickpimentel.mercadoeditorial.adapter.LoadMoreBooksAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentHomeBinding
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
@@ -27,7 +28,7 @@ class HomeFragment : Fragment(){
     private val bookViewModel: BookViewModel by activityViewModels()
 
     @Inject
-    lateinit var bookPagingDataAdapter: BookPagingDataAdapter
+    lateinit var bookRecyclerViewAdapter: BookRecyclerViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +38,7 @@ class HomeFragment : Fragment(){
 
         setupRecyclerView()
 
-        bookPagingDataAdapter.setOnItemClickListener {
+        bookRecyclerViewAdapter.setOnItemClickListener {
             bookViewModel.addCurrentBook(it)
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToBookDetailsFragment())
         }
@@ -51,12 +52,12 @@ class HomeFragment : Fragment(){
         binding.apply {
             lifecycleScope.launchWhenCreated {
                 bookViewModel.bookList.collect{
-                    bookPagingDataAdapter.submitData(it)
+                    bookRecyclerViewAdapter.submitData(it)
                 }
             }
 
             lifecycleScope.launchWhenCreated {
-                bookPagingDataAdapter.loadStateFlow.collect{
+                bookRecyclerViewAdapter.loadStateFlow.collect{
                     val state = it.refresh
                     progressBar.isVisible = state is LoadState.Loading
                 }
@@ -68,14 +69,12 @@ class HomeFragment : Fragment(){
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
 
-            adapter = bookPagingDataAdapter.withLoadStateFooter(
+            adapter = bookRecyclerViewAdapter.withLoadStateFooter(
                 LoadMoreBooksAdapter{
-                    bookPagingDataAdapter.retry()
+                    bookRecyclerViewAdapter.retry()
                 }
             )
         }
-
-
     }
 
 }
