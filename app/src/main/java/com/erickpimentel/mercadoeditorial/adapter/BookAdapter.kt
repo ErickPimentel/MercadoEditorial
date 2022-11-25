@@ -13,7 +13,7 @@ import com.erickpimentel.mercadoeditorial.response.Book
 import com.erickpimentel.mercadoeditorial.utils.Status
 import javax.inject.Inject
 
-class BookRecyclerViewAdapter @Inject constructor(): PagingDataAdapter<Book, BookRecyclerViewAdapter.BookViewHolder>(differCallback) {
+class BookAdapter @Inject constructor(): PagingDataAdapter<Book, BookAdapter.BookViewHolder>(differCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookViewHolder {
         return BookViewHolder(BookViewBinding.inflate(LayoutInflater.from(parent.context), parent, false))
@@ -48,19 +48,6 @@ class BookRecyclerViewAdapter @Inject constructor(): PagingDataAdapter<Book, Boo
                 }
             }
         }
-
-        private fun codeToParentalImageDrawable(code: Int): Int{
-            return when (code){
-                1 -> R.drawable.ic_everyone
-                2 -> R.drawable.ic_years_old_10
-                3 -> R.drawable.ic_years_old_12
-                4 -> R.drawable.ic_years_old_14
-                5 -> R.drawable.ic_years_old_16
-                6 -> R.drawable.ic_years_old_18
-                7 -> R.drawable.ic_exclusively_for_children
-                else -> R.drawable.placeholder
-            }
-        }
     }
 
     private var onItemClickListener: ((Book) -> Unit)? = null
@@ -77,6 +64,19 @@ class BookRecyclerViewAdapter @Inject constructor(): PagingDataAdapter<Book, Boo
             override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
                 return oldItem == newItem
             }
+        }
+    }
+
+    private fun codeToParentalImageDrawable(code: Int): Int{
+        return when (code){
+            1 -> R.drawable.ic_everyone
+            2 -> R.drawable.ic_years_old_10
+            3 -> R.drawable.ic_years_old_12
+            4 -> R.drawable.ic_years_old_14
+            5 -> R.drawable.ic_years_old_16
+            6 -> R.drawable.ic_years_old_18
+            7 -> R.drawable.ic_exclusively_for_children
+            else -> R.drawable.placeholder
         }
     }
 }

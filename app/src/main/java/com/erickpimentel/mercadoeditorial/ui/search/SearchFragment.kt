@@ -21,7 +21,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.cachedIn
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.erickpimentel.mercadoeditorial.R
-import com.erickpimentel.mercadoeditorial.adapter.BookRecyclerViewAdapter
+import com.erickpimentel.mercadoeditorial.adapter.BookAdapter
 import com.erickpimentel.mercadoeditorial.databinding.FragmentSearchBinding
 import com.erickpimentel.mercadoeditorial.repository.ApiRepository
 import com.erickpimentel.mercadoeditorial.viewmodel.BookViewModel
@@ -38,7 +38,7 @@ class SearchFragment : Fragment(){
     lateinit var apiRepository: ApiRepository
 
     @Inject
-    lateinit var bookRecyclerViewAdapter: BookRecyclerViewAdapter
+    lateinit var bookAdapter: BookAdapter
 
     private val bookViewModel: BookViewModel by activityViewModels()
 
@@ -56,7 +56,7 @@ class SearchFragment : Fragment(){
 
         setOnSuggestionListener()
 
-        bookRecyclerViewAdapter.setOnItemClickListener {
+        bookAdapter.setOnItemClickListener {
             bookViewModel.addSuggestion(binding.searchView.query.toString())
             bookViewModel.addCurrentBook(it)
             findNavController().navigate(SearchFragmentDirections.actionSearchFragmentToBookDetailsFragment())
@@ -99,7 +99,7 @@ class SearchFragment : Fragment(){
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = bookRecyclerViewAdapter
+            adapter = bookAdapter
         }
     }
 
@@ -135,7 +135,7 @@ class SearchFragment : Fragment(){
                 bookViewModel.status.value
             ).cachedIn(lifecycleScope)
             bookList.collect{
-                bookRecyclerViewAdapter.submitData(it)
+                bookAdapter.submitData(it)
             }
         }
     }
