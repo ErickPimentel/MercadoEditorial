@@ -112,7 +112,12 @@ class SearchFragment : Fragment(){
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = bookAdapter
+
+            adapter = bookAdapter.withLoadStateFooter(
+                LoadMoreBooksAdapter{
+                    bookAdapter.retry()
+                }
+            )
         }
     }
 
